@@ -1,4 +1,4 @@
-# implementation of Spaceship - program template for RiceRocks
+# implementation of Spaceship
 import simplegui
 import math
 import random
@@ -7,6 +7,7 @@ import random
 WIDTH = 800
 HEIGHT = 600
 ANGLE_INC = .1
+FRICTION = .99
 score = 0
 lives = 3
 time = 0
@@ -67,7 +68,7 @@ asteroid_info = ImageInfo([45, 45], [90, 90], 40)
 asteroid_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blue.png")
 
 # animated explosion - explosion_orange.png, explosion_blue.png, explosion_blue2.png, explosion_alpha.png
-explosion_info = ImageInfo([64, 64], [128, 128], 17, 24, True)
+explosion_info = ImageInfo([2624, 64], [128, 128], 17, 24, True)
 explosion_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_alpha.png")
 
 # sound assets purchased from sounddogs.com, please do not redistribute
@@ -101,8 +102,9 @@ def process_sprite_group(sprite_set, canvas):
             
     sprite_set.difference_update(remove)
 
-# checks for obj collide with rocks
+# checks if and object collide with rocks
 def group_collide(group, obj):
+    global explosion
     remove = set([])
     collision = False
     
@@ -110,7 +112,9 @@ def group_collide(group, obj):
         if g.collide(obj):
             remove.add(g)
             collision = True
-            
+            explosion = Sprite(g.pos, [0, 0], 0, 0, explosion_image, explosion_info, explosion_sound)
+            explosion_group.add(explosion)
+
     group.difference_update(remove)
     
     return collision
@@ -167,8 +171,8 @@ class Ship:
             self.vel[1] += acc[1] * .1
         
         # friction
-        self.vel[0] *= .99
-        self.vel[1] *= .99
+        self.vel[0] *= FRICTION
+        self.vel[1] *= FRICTION
 
     def set_thrust(self, on):
         self.thrust = on
@@ -317,6 +321,7 @@ def draw(canvas):
     if started:
         process_sprite_group(rock_group, canvas)
         process_sprite_group(missile_group, canvas)
+        process_sprite_group(explosion_group, canvas)
         
         # update ship and sprites
         my_ship.update()
@@ -360,6 +365,7 @@ frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 rock_group = set([])
 missile_group = set([])
+explosion_group = set([])
 
 # register handlers
 frame.set_keyup_handler(keyup)
