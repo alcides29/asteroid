@@ -1,6 +1,6 @@
 # asteroid
 Python implementation of Asteroid game.
-It uses object oriented programming and classes, sprite, imagae animation, keyboard inputs and click input.
+It uses object oriented programming and classes, sprite, image animation, keyboard inputs and click input.
 
 TO PLAY
 -> Open http://www.codeskulptor.org
